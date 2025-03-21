@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "test-django-htmx"
+version = "0.1.0"
+description = ""
+authors = ["Nicolas M. <mine.nicolas@gmail.com>"]
+readme = "README.md"
+packages = [{include = "test_django_htmx"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^5.1.7"
+djangorestframework = "^3.15.2"
+django-filter = "^25.1"
+django-htmx = "^1.22.0"
+mozilla-django-oidc = "^4.0.1"
+python-decouple = "^3.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
