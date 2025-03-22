@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -6,3 +7,68 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     pass
+
+
+
+class TodoQuerySet(models.QuerySet):
+    def by_user(self, user):
+        return self.filter(created_by=user)
+
+    def active(self):
+        return self.filter(deleted=False).filter(completed=False)
+
+
+class TodoManager(models.Manager):
+    def get_queryset(self):
+        return TodoQuerySet(self.model, using=self._db)
+
+    def by_user(self, user, active_only=True):
+        queryset = self.get_queryset().by_user(user)
+        return queryset.active() if active_only else queryset
+
+
+class Todo(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title = models.CharField(max_length=255, unique=False)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="todos")
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed = models.BooleanField(default=False)  # Tracks completion status
+    completed_at = models.DateTimeField(auto_now_add=True)
+    deleted = models.BooleanField(default=False)  # Tracks completion status
+    deleted_at = models.DateTimeField(null=True, blank=True)  # Soft delete support
+
+    objects = TodoManager()
+
+    class Meta:
+        ordering = ["-created_at"]  # Newest first
+        indexes = [
+            models.Index(fields=["created_at"]),
+            models.Index(fields=["completed"]),
+        ]
+
+    def __str__(self):
+        return f"Todo({self.title}) by {self.created_by}"
+
+    def soft_delete(self):
+        """Marks the task as deleted without actually removing it."""
+        self.deleted = True
+        self.deleted_at = timezone.now()
+        self.save()
+
+    def restore(self):
+        """Restores a soft-deleted task."""
+        self.deleted = False
+        self.deleted_at = None
+        self.save()
+
+    def complete(self):
+        """Marks the task as deleted without actually removing it."""
+        self.completed = True
+        self.completed_at = timezone.now()
+        self.save()
+
+    def uncomplete(self):
+        """Restores a soft-deleted task."""
+        self.completed = False
+        self.completed_at = None
+        self.save()

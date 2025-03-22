@@ -6,7 +6,7 @@ from mozilla_django_oidc.views import OIDCAuthenticationRequestView, OIDCLogoutV
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('load-message/', views.load_message, name='load_message'),
+    path('get_count_of_tasks/', views.get_count_of_tasks, name='get_count_of_tasks'),
 
     path("oidc/", include("mozilla_django_oidc.urls")),
     path("login/", OIDCAuthenticationRequestView.as_view(), name="oidc_authentication_init"),

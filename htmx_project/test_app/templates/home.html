@@ -1,34 +1,87 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTMX + Django</title>
+    <meta name="description" content="A layout example that shows off a responsive product landing page.">
+    <title>HTMX Todos</title>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <h1>Welcome to HTMX with Django</h1>
+
+    <div class="header">
+        <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+            <a class="pure-menu-heading" href="#">HTMX Todos</a>
     
-    <button hx-get="{% url 'load_message' %}" hx-target="#message" hx-swap="outerHTML">
-        Click to Load Message
-    </button>
+            <ul class="pure-menu-list">
+                {% if user.is_authenticated %}
+                    <li class="pure-menu-item">Hello, {{ user.email }}</li>
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="document.getElementById('logout-form').submit();">Logout</a></li>
+                    <form id="logout-form" action="{% url 'oidc_logout' %}" method="post" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                {% else %}
+                    <li class="pure-menu-item"><a href="{% url 'oidc_authentication_init' %}" class="pure-menu-link">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
     
-    <div id="message"></div>
+    <div class="splash-container">
+        <div class="splash">
+            <p class="splash-head">My Todos</p>
+            <div class="splash-subhead" id="counter"></div>
+        </div>
+        
+        <div class="splash">
+    
+            <button hx-get="{% url 'get_count_of_tasks' %}" hx-target="#counter" hx-swap="innerHTML">
+                Click to Load Message
+            </button>
+        
+        
+            <table class="pure-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="grow">Description</th>
+                        <th>Age</th>
+                        <th>Completed</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td class="grow">Honda</td>
+                        <td>Accord</td>
+                        <td>2009</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td class="grow">Toyota</td>
+                        <td>Camry</td>
+                        <td>2012</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td class="grow">Hyundai</td>
+                        <td>Elantra</td>
+                        <td>2010</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            
+        </div>
+    </div>
 
 
-    {% if user.is_authenticated %}
-        <p>Current user: {{ user.email }}</p>
-    {% else %}
-        <p>Anonymous User</p>
-    {% endif %}
-
-    {% if user.is_authenticated %}
-        <form action="{% url 'oidc_logout' %}" method="post">
-        {% csrf_token %}
-        <input type="submit" value="logout">
-        </form>
-    {% else %}
-        <a href="{% url 'oidc_authentication_init' %}">Login</a>
-    {% endif %}
 </body>
 </html>

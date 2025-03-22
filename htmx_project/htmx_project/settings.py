@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from decouple import config
 import urllib3
@@ -188,3 +188,10 @@ LOGGING = {
         },
     }
 }
+
+
+STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]  # Optional if you store static files in the main project folder
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
