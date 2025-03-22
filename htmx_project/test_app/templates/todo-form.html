@@ -1,5 +1,5 @@
 <form id="new-todo-form" class="pure-form" hx-post="{% url 'add_todo' %}" hx-swap="beforeend" hx-target="tbody">
-    <div class="form-group">
+    <fieldset>
         <input 
             type="text" 
             name="title" 
@@ -8,6 +8,6 @@
             required
             autocomplete="off"
         >
-        <button type="submit" class="pure-button pure-button-primary">Add Task</button>
-    </div>
+        <button type="submit" class="pure-button button-secondary">Add Task</button>
+    </fieldset>
 </form>
