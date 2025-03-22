@@ -1,0 +1,13 @@
+<form id="new-todo-form" class="pure-form" hx-post="{% url 'add_todo' %}" hx-swap="beforeend" hx-target="tbody">
+    <div class="form-group">
+        <input 
+            type="text" 
+            name="title" 
+            placeholder="What needs to be done?" 
+            class="pure-input-2-3" 
+            required
+            autocomplete="off"
+        >
+        <button type="submit" class="pure-button pure-button-primary">Add Task</button>
+    </div>
+</form>

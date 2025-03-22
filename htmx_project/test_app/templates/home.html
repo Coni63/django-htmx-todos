@@ -12,6 +12,28 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.body.addEventListener("htmx:configRequest", function (event) {
+                event.detail.headers["X-CSRFToken"] = getCookie("csrftoken");
+            });
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== "") {
+                    let cookies = document.cookie.split(";");
+                    for (let i = 0; i < cookies.length; i++) {
+                        let cookie = cookies[i].trim();
+                        if (cookie.startsWith(name + "=")) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        });
+    </script>
 </head>
 <body>
 
@@ -20,7 +42,7 @@
     <div class="splash-container">
         <div class="splash">
             <p class="splash-head">My Todos</p>
-            <div class="splash-subhead" id="counter" hx-get="{% url 'get_count_of_tasks' %}" hx-swap="innerHTML" hx-trigger="load"></div>
+            <div class="splash-subhead" id="counter" hx-get="{% url 'get_count_of_tasks' %}" hx-swap="innerHTML" hx-trigger="load, refresh-counter from:body"></div>
         </div>
         
         <div class="splash">

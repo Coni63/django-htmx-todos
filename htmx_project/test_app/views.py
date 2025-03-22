@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
 
 from test_app.models import Todo
@@ -24,3 +24,52 @@ def get_table(request):
     return render(request, 'table.html', {
         "todos": todos
     })
+
+@login_required
+def toggle_todo(request, todo_id):
+    """Toggles the completion status of a task."""
+    if request.method == "POST":
+        todo = get_object_or_404(Todo, id=todo_id, created_by=request.user)
+        todo.toggle_complete()
+        todo.save()
+
+        # Re-render the updated row
+        response = render(request, 'table_row.html', {'todo': todo})
+        response['HX-Trigger'] = 'refresh-counter'
+        return response
+
+    return HttpResponseNotAllowed(["POST"])
+
+
+@login_required
+def delete_todo(request, todo_id):
+    """Deletes a task via HTMX."""
+    if request.method == "DELETE":
+        todo = get_object_or_404(Todo, id=todo_id, created_by=request.user)
+        todo.soft_delete()
+
+        response = HttpResponse("")  # HTMX will remove the row
+        response['HX-Trigger'] = 'refresh-counter'
+        return response
+
+    return HttpResponseNotAllowed(["DELETE"])
+
+
+@login_required
+def add_todo(request):
+    """Adds a new todo item."""
+    if request.method == "POST":
+        title = request.POST.get('title', '').strip()
+        if title:
+            # Create new todo with the current user
+            todo = Todo.objects.create(
+                title=title,
+                created_by=request.user
+            )
+            
+            # Render just the new row and trigger counter refresh
+            response = render(request, 'table_row.html', {'todo': todo})
+            response['HX-Trigger'] = 'refresh-counter'
+            return response
+            
+    return HttpResponseBadRequest("Invalid request")

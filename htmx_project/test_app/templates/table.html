@@ -1,3 +1,5 @@
+{% include "todo-form.html" %}
+
 <table class="pure-table">
     <thead>
         <tr>
@@ -10,19 +12,7 @@
     </thead>
     <tbody>
         {% for todo in todos %}
-            <tr>
-                <td>{{ todo.id }}</td>
-                <td class="grow">{{ todo.title }}</td>
-                <td>{{ todo.created_at | timesince }} ago</td>
-                <td>
-                    {% if todo.completed %}
-                        <input id="default-remember" type="checkbox" checked/>
-                    {% else %}
-                        <input id="default-remember" type="checkbox" />
-                    {% endif %}
-                </td>
-                <td></td>
-            </tr>
+            {% include "table_row.html" with todo=todo %}
         {% endfor %}
     </tbody>
 </table>

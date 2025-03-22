@@ -1,0 +1,21 @@
+<tr id="todo-{{ todo.id }}">
+    <td>{{ todo.id }}</td>
+    <td class="grow">{{ todo.title }}</td>
+    <td>{{ todo.created_at|timesince }} ago</td>
+    <td>
+        <input type="checkbox"
+               hx-post="{% url 'toggle_todo' todo.id %}"
+               hx-trigger="change"
+               hx-target="#todo-{{ todo.id }}"
+               hx-swap="outerHTML"
+               {% if todo.completed %}checked{% endif %} />
+    </td>
+    <td>
+        <button hx-delete="{% url 'delete_todo' todo.id %}"
+                hx-confirm="Are you sure you want to delete this task?"
+                hx-target="#todo-{{ todo.id }}"
+                hx-swap="outerHTML">
+            ❌
+        </button>
+    </td>
+</tr>

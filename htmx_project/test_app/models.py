@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import datetime, timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -40,7 +40,7 @@ class Todo(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="todos")
     created_at = models.DateTimeField(auto_now_add=True)
     completed = models.BooleanField(default=False)  # Tracks completion status
-    completed_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
     deleted = models.BooleanField(default=False)  # Tracks completion status
     deleted_at = models.DateTimeField(null=True, blank=True)  # Soft delete support
 
@@ -64,7 +64,7 @@ class Todo(models.Model):
     def soft_delete(self):
         """Marks the task as deleted without actually removing it."""
         self.deleted = True
-        self.deleted_at = timezone.now()
+        self.deleted_at = datetime.now(tz=timezone.utc)
         self.save()
 
     def restore(self):
@@ -76,11 +76,21 @@ class Todo(models.Model):
     def complete(self):
         """Marks the task as deleted without actually removing it."""
         self.completed = True
-        self.completed_at = timezone.now()
+        self.completed_at = datetime.now(tz=timezone.utc)
+        self.deleted = False
+        self.deleted_at = None
         self.save()
 
     def uncomplete(self):
         """Restores a soft-deleted task."""
         self.completed = False
         self.completed_at = None
+        self.deleted = False
+        self.deleted_at = None
         self.save()
+
+    def toggle_complete(self):
+        if self.completed:
+            self.uncomplete()
+        else:
+            self.complete()
