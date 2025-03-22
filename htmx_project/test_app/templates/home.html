@@ -15,70 +15,16 @@
 </head>
 <body>
 
-    <div class="header">
-        <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-            <a class="pure-menu-heading" href="#">HTMX Todos</a>
-    
-            <ul class="pure-menu-list">
-                {% if user.is_authenticated %}
-                    <li class="pure-menu-item">Hello, {{ user.email }}</li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="document.getElementById('logout-form').submit();">Logout</a></li>
-                    <form id="logout-form" action="{% url 'oidc_logout' %}" method="post" style="display: none;">
-                        {% csrf_token %}
-                    </form>
-                {% else %}
-                    <li class="pure-menu-item"><a href="{% url 'oidc_authentication_init' %}" class="pure-menu-link">Login</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
+    {% include 'header.html' %}
     
     <div class="splash-container">
         <div class="splash">
             <p class="splash-head">My Todos</p>
-            <div class="splash-subhead" id="counter"></div>
+            <div class="splash-subhead" id="counter" hx-get="{% url 'get_count_of_tasks' %}" hx-swap="innerHTML" hx-trigger="load"></div>
         </div>
         
         <div class="splash">
-    
-            <button hx-get="{% url 'get_count_of_tasks' %}" hx-target="#counter" hx-swap="innerHTML">
-                Click to Load Message
-            </button>
-        
-        
-            <table class="pure-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th class="grow">Description</th>
-                        <th>Age</th>
-                        <th>Completed</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td class="grow">Honda</td>
-                        <td>Accord</td>
-                        <td>2009</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td class="grow">Toyota</td>
-                        <td>Camry</td>
-                        <td>2012</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td class="grow">Hyundai</td>
-                        <td>Elantra</td>
-                        <td>2010</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            
+            <div hx-get="{% url 'get_table' %}" hx-trigger="load" hx-swap="outerHTML"></div>
         </div>
     </div>
 

@@ -14,17 +14,24 @@ class TodoQuerySet(models.QuerySet):
     def by_user(self, user):
         return self.filter(created_by=user)
 
-    def active(self):
-        return self.filter(deleted=False).filter(completed=False)
+    def not_deleted(self):
+        return self.filter(deleted=False)
+    
+    def not_completed(self):
+        return self.filter(completed=False)
 
 
 class TodoManager(models.Manager):
     def get_queryset(self):
         return TodoQuerySet(self.model, using=self._db)
 
-    def by_user(self, user, active_only=True):
+    def by_user(self, user, with_deleted=False, with_completed=True):
         queryset = self.get_queryset().by_user(user)
-        return queryset.active() if active_only else queryset
+        if not with_deleted:
+            queryset = queryset.not_deleted()
+        if not with_completed:
+             queryset = queryset.not_completed()
+        return queryset
 
 
 class Todo(models.Model):
@@ -47,7 +54,12 @@ class Todo(models.Model):
         ]
 
     def __str__(self):
-        return f"Todo({self.title}) by {self.created_by}"
+        if self. completed:
+            return f"Todo #{self.id} by {self.created_by.email} - Completed"
+        elif self. deleted:
+            return f"Todo #{self.id} by {self.created_by.email} - Deleted"
+        else:
+            return f"Todo #{self.id} by {self.created_by.email}"
 
     def soft_delete(self):
         """Marks the task as deleted without actually removing it."""

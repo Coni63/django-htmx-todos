@@ -1,0 +1,28 @@
+<table class="pure-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th class="grow">Description</th>
+            <th>Age</th>
+            <th>Completed</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for todo in todos %}
+            <tr>
+                <td>{{ todo.id }}</td>
+                <td class="grow">{{ todo.title }}</td>
+                <td>{{ todo.created_at | timesince }} ago</td>
+                <td>
+                    {% if todo.completed %}
+                        <input id="default-remember" type="checkbox" checked/>
+                    {% else %}
+                        <input id="default-remember" type="checkbox" />
+                    {% endif %}
+                </td>
+                <td></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

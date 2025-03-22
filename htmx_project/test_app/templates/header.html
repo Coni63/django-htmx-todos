@@ -1,0 +1,17 @@
+<div class="header">
+    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+        <a class="pure-menu-heading" href="#">HTMX Todos</a>
+
+        <ul class="pure-menu-list">
+            {% if user.is_authenticated %}
+                <li class="pure-menu-item">Hello, {{ user.email }}</li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="document.getElementById('logout-form').submit();">Logout</a></li>
+                <form id="logout-form" action="{% url 'oidc_logout' %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+            {% else %}
+                <li class="pure-menu-item"><a href="{% url 'oidc_authentication_init' %}" class="pure-menu-link">Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
